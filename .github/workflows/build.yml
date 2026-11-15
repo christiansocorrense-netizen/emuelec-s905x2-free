@@ -20,6 +20,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential gcc make git unzip wget xz-utils libsdl2-dev libsdl2-mixer-dev libfreeimage-dev libfreetype6-dev libcurl4-openssl-dev rapidjson-dev libasound2-dev libgl1-mesa-dev libboost-all-dev cmake fonts-droid-fallback libvlc-dev libvlccore-dev vlc-bin texinfo premake4 golang libssl-dev curl patchelf xmlstarlet default-jre xsltproc libvpx-dev rdfind tzdata xfonts-utils lzop bc libncurses-dev zstd libparse-yapp-perl smpq device-tree-compiler
+          sudo apt-get install -y gperf libxml-parser-perl patchutils
       - name: Obter fontes
         run: |
           git clone --depth 1 --branch dev https://github.com/EmuELEC/EmuELEC.git source
