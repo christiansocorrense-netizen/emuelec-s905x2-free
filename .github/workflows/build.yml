@@ -45,6 +45,15 @@ jobs:
           rm -rf source/packages/retroarch/cores/libretro/ecwolf
           find source/packages -type d -name 'ecwolf' -print -exec rm -rf {} +
           find source/projects -type d -name 'ecwolf' -print -exec rm -rf {} +
+          grep -rl 'PKG_DEPENDS_TARGET=.*ecwolf' source/packages source/projects 2>/dev/null |
+          while read -r file; do
+            sed -i 's/[[:space:]]ecwolf//g; s/ecwolf[[:space:]]//g; s/ecwolf$//g' "$file"
+            echo "Removida dependencia ECWolf de: $file"
+          done
+          if grep -RIn 'PKG_DEPENDS_TARGET=.*ecwolf' source/packages source/projects 2>/dev/null; then
+            echo 'Ainda existe referencia ao ECWolf em PKG_DEPENDS_TARGET'
+            exit 1
+          fi
       - name: Compilar
         shell: bash
         run: |
