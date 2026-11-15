@@ -38,6 +38,13 @@ jobs:
             's#https://gmplib.org/download/gmp/${PKG_NAME}-${PKG_VERSION}.tar.xz#https://ftp.gnu.org/gnu/gmp/${PKG_NAME}-${PKG_VERSION}.tar.xz#' \
             source/packages/devel/gmp/package.mk
           grep -n 'PKG_URL' source/packages/devel/gmp/package.mk
+      - name: Remover ECWolf
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf source/packages/retroarch/cores/libretro/ecwolf
+          find source/packages -type d -name 'ecwolf' -print -exec rm -rf {} +
+          find source/projects -type d -name 'ecwolf' -print -exec rm -rf {} +
       - name: Compilar
         shell: bash
         run: |
