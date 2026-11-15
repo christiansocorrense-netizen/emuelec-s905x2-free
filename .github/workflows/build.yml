@@ -1,0 +1,64 @@
+name: EmuELEC gratuito experimental
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 350
+    steps:
+      - name: Liberar disco temporario
+        shell: bash
+        run: |
+          df -h
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/.ghcup
+          docker image prune -af || true
+          sudo apt-get clean
+          df -h
+      - name: Dependencias
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential gcc make git unzip wget xz-utils libsdl2-dev libsdl2-mixer-dev libfreeimage-dev libfreetype6-dev libcurl4-openssl-dev rapidjson-dev libasound2-dev libgl1-mesa-dev libboost-all-dev cmake fonts-droid-fallback libvlc-dev libvlccore-dev vlc-bin texinfo premake4 golang libssl-dev curl patchelf xmlstarlet default-jre xsltproc libvpx-dev rdfind tzdata xfonts-utils lzop bc libncurses-dev zstd libparse-yapp-perl smpq device-tree-compiler
+      - name: Obter fontes
+        run: |
+          git clone --depth 1 --branch dev https://github.com/EmuELEC/EmuELEC.git source
+          git -C source rev-parse HEAD > source-commit.txt
+          test -d source/projects/Amlogic-ce/devices/Amlogic-ng
+      - name: Compilar
+        shell: bash
+        run: |
+          set -o pipefail
+          df -h
+          cd source
+          PROJECT=Amlogic-ce DEVICE=Amlogic-ng ARCH=aarch64 DISTRO=EmuELEC make image 2>&1 | tee ../build.log
+      - name: Preparar imagem e checksums
+        shell: bash
+        run: |
+          mkdir -p dist
+          shopt -s nullglob
+          images=(source/target/*.img.gz)
+          test "${#images[@]}" -gt 0
+          cp "${images[@]}" dist/
+          cp source-commit.txt dist/
+          cd dist
+          sha256sum -- *.img.gz > SHA256SUMS
+      - name: Publicar imagem
+        uses: actions/upload-artifact@v4
+        with:
+          name: emuelec-s905x2-image
+          path: dist/
+          retention-days: 3
+          compression-level: 0
+          if-no-files-found: error
+      - name: Publicar logs mesmo em falha
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-diagnostics
+          path: |
+            build.log
+            source-commit.txt
+            source/build.*/.threads/logs/**
+          retention-days: 3
+          if-no-files-found: warn
