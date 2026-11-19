@@ -64,12 +64,13 @@ jobs:
           set -euo pipefail
           ROOT="$PWD"
           CACHE="$ROOT/source/build.EmuELEC-Amlogic-ng.aarch64-4/sources/u-boot"
+          FILE="$CACHE/u-boot-2016.03.tar.bz2"
           mkdir -p "$CACHE"
-          if [ ! -s "$CACHE/u-boot-2016.03.tar.bz2" ]; then
-            curl -fL --retry 3 -o "$CACHE/u-boot-2016.03.tar.bz2" "https://ftp.denx.de/pub/u-boot/u-boot-2016.03.tar.bz2"
+          if [ ! -s "$FILE" ]; then
+            curl -fL --connect-timeout 20 --retry 2 -o "$FILE" "https://u-boot.osuosl.org/pub/u-boot/u-boot-2016.03.tar.bz2" || curl -fL --connect-timeout 20 --retry 2 -o "$FILE" "https://ftp.denx.de/pub/u-boot/u-boot-2016.03.tar.bz2"
           fi
-          expected=$(grep -oP '(?<=PKG_SHA256=")["]+' "$ROOT/source/projects/Amlogic-ce/packages/tools/u-boot-tools/package.mk")
-          echo "$expected  $CACHE/u-boot-2016.03.tar.bz2" | sha256sum -c -
+          expected=$(grep -oP '(?<=PKG_SHA256=")[^"]+' "$ROOT/source/projects/Amlogic-ce/packages/tools/u-boot-tools/package.mk")
+          echo "$expected  $FILE" | sha256sum -c -
 
       - name: Compilar
         shell: bash
