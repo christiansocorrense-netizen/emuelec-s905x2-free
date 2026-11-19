@@ -58,16 +58,14 @@ jobs:
             | xargs -r sed -Ei 's/\becwolf\b//g'
           grep -RInI -w 'ecwolf' source/packages source/projects 2>/dev/null || true
 
-      - name: Diagnosticar download do u-boot-tools
+      - name: Corrigir download do u-boot-tools
         shell: bash
         run: |
           set -euo pipefail
-          echo === Receita u-boot-tools ===
-          cat source/packages/tools/u-boot-tools/package.mk
-          echo === Referencias ao servidor DENX ===
-          grep -RInI -F ftp.denx.de source/packages source/projects source/config source/scripts 2>/dev/null || true
-          echo === Parada intencional antes da compilacao ===
-          exit 1
+          sed -i 's#ftp://ftp.denx.de/pub/u-boot/#https://ftp.denx.de/pub/u-boot/#g' source/projects/Amlogic-ce/packages/tools/u-boot-tools/package.mk
+          echo === URL apos a correcao ===
+          grep -n PKG_URL source/projects/Amlogic-ce/packages/tools/u-boot-tools/package.mk
+          grep -q 'https://ftp.denx.de/pub/u-boot/' source/projects/Amlogic-ce/packages/tools/u-boot-tools/package.mk
 
       - name: Compilar
         shell: bash
