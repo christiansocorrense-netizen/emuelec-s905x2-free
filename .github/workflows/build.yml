@@ -58,14 +58,18 @@ jobs:
             | xargs -r sed -Ei 's/\becwolf\b//g'
           grep -RInI -w 'ecwolf' source/packages source/projects 2>/dev/null || true
 
-      - name: Corrigir download do u-boot-tools
+      - name: Pre-baixar u-boot-tools
         shell: bash
         run: |
           set -euo pipefail
-          sed -i 's#ftp://ftp.denx.de/pub/u-boot/#https://ftp.denx.de/pub/u-boot/#g' source/projects/Amlogic-ce/packages/tools/u-boot-tools/package.mk
-          echo === URL apos a correcao ===
-          grep -n PKG_URL source/projects/Amlogic-ce/packages/tools/u-boot-tools/package.mk
-          grep -q 'https://ftp.denx.de/pub/u-boot/' source/projects/Amlogic-ce/packages/tools/u-boot-tools/package.mk
+          ROOT="$PWD"
+          CACHE="$ROOT/source/build.EmuELEC-Amlogic-ng.aarch64-4/sources/u-boot"
+          mkdir -p "$CACHE"
+          if [ ! -s "$CACHE/u-boot-2016.03.tar.bz2" ]; then
+            curl -fL --retry 3 -o "$CACHE/u-boot-2016.03.tar.bz2" "https://ftp.denx.de/pub/u-boot/u-boot-2016.03.tar.bz2"
+          fi
+          expected=$(grep -oP '(?<=PKG_SHA256=")["]+' "$ROOT/source/projects/Amlogic-ce/packages/tools/u-boot-tools/package.mk")
+          echo "$expected  $CACHE/u-boot-2016.03.tar.bz2" | sha256sum -c -
 
       - name: Compilar
         shell: bash
