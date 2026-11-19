@@ -58,35 +58,16 @@ jobs:
             | xargs -r sed -Ei 's/\becwolf\b//g'
           grep -RInI -w 'ecwolf' source/packages source/projects 2>/dev/null || true
 
-      - name: Corrigir download do u-boot-tools
+      - name: Diagnosticar download do u-boot-tools
         shell: bash
         run: |
           set -euo pipefail
-
-          mapfile -d '' recipes < <(
-            find source/packages -type f \
-              -path '*/u-boot-tools/package.mk' -print0
-          )
-
-          if [ "${#recipes[@]}" -ne 1 ]; then
-            echo "Erro: esperava uma receita de u-boot-tools."
-            printf '%s\n' "${recipes[@]}"
-            exit 1
-          fi
-
-          recipe="${recipes[0]}"
-
-          sed -i \
-            's#ftp://ftp.denx.de/pub/u-boot/#https://ftp.denx.de/pub/u-boot/#g' \
-            "$recipe"
-
-          echo "Receita corrigida: $recipe"
-          grep -n 'PKG_URL' "$recipe"
-
-          if ! grep -q 'https://ftp.denx.de/pub/u-boot/' "$recipe"; then
-            echo "Erro: a URL esperada não foi encontrada."
-            exit 1
-          fi
+          echo === Receita u-boot-tools ===
+          cat source/packages/tools/u-boot-tools/package.mk
+          echo === Referencias ao servidor DENX ===
+          grep -RInI -F ftp.denx.de source/packages source/projects source/config source/scripts 2>/dev/null || true
+          echo === Parada intencional antes da compilacao ===
+          exit 1
 
       - name: Compilar
         shell: bash
