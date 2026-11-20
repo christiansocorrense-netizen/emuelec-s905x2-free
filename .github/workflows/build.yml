@@ -63,8 +63,8 @@ jobs:
         run: |
           set -euo pipefail
           ROOT="$PWD"
-          CACHE="$ROOT/source/build.EmuELEC-Amlogic-ng.aarch64-4/sources/u-boot"
-          FILE="$CACHE/u-boot-2016.03.tar.bz2"
+          CACHE="$ROOT/source/sources/u-boot-tools"
+          FILE="$CACHE/u-boot-tools-2016.03.tar.bz2"
           mkdir -p "$CACHE"
           if [ ! -s "$FILE" ]; then
             curl -fL --connect-timeout 20 --retry 2 -o "$FILE" "https://sources.buildroot.net/u-boot-2016.03.tar.bz2" || curl -fL --connect-timeout 20 --retry 2 -o "$FILE" "https://mirror.cyberbits.eu/u-boot/u-boot-2016.03.tar.bz2" || curl -fL --connect-timeout 20 --retry 2 -o "$FILE" "https://ftp.denx.de/pub/u-boot/u-boot-2016.03.tar.bz2"
