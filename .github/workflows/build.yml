@@ -67,7 +67,7 @@ jobs:
           FILE="$CACHE/u-boot-tools-2016.03.tar.bz2"
           mkdir -p "$CACHE"
           if [ ! -s "$FILE" ]; then
-            curl -fL --connect-timeout 20 --retry 2 -o "$FILE" "https://sources.buildroot.net/u-boot-2016.03.tar.bz2" || curl -fL --connect-timeout 20 --retry 2 -o "$FILE" "https://mirror.cyberbits.eu/u-boot/u-boot-2016.03.tar.bz2" || curl -fL --connect-timeout 20 --retry 2 -o "$FILE" "https://ftp.denx.de/pub/u-boot/u-boot-2016.03.tar.bz2"
+            curl -fL --connect-timeout 30 --retry 3 -o "$FILE" "https://ftp.denx.de/pub/u-boot/u-boot-2016.03.tar.bz2" || curl -fL --connect-timeout 30 --retry 3 -o "$FILE" "https://mirror.cyberbits.eu/u-boot/u-boot-2016.03.tar.bz2"; test -s "$FILE" || { echo "ERRO: arquivo u-boot-tools nao foi baixado"; exit 1; }
           fi
           expected=$(grep -oP '(?<=PKG_SHA256=")[^"]+' "$ROOT/source/projects/Amlogic-ce/packages/tools/u-boot-tools/package.mk")
           echo "$expected  $FILE" | sha256sum -c -
