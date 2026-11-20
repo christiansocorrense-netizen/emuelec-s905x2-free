@@ -72,6 +72,14 @@ jobs:
           expected=$(grep -oP '(?<=PKG_SHA256=")[^"]+' "$ROOT/source/projects/Amlogic-ce/packages/tools/u-boot-tools/package.mk")
           echo "$expected  $FILE" | sha256sum -c -
 
+      - name: Corrigir URL do u-boot-tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          PKG=source/projects/Amlogic-ce/packages/tools/u-boot-tools/package.mk
+          test -f "$PKG"
+          sed -i 's#^PKG_URL=.*#PKG_URL="https://mirror.cyberbits.eu/u-boot"#' "$PKG"
+          grep -n 'PKG_URL' "$PKG"
       - name: Compilar
         shell: bash
         run: |
