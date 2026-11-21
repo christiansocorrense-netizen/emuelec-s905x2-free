@@ -78,7 +78,7 @@ jobs:
           set -euo pipefail
           PKG=source/projects/Amlogic-ce/packages/tools/u-boot-tools/package.mk
           test -f "$PKG"
-          sed -i 's#^PKG_URL=.*#PKG_URL="https://mirror.cyberbits.eu/u-boot"#' "$PKG"
+          sed -i 's#^PKG_URL=.*#PKG_URL="https://mirror.cyberbits.eu/u-boot/u-boot-tools-2016.03.tar.bz2"#' "$PKG"
           grep -n 'PKG_URL' "$PKG"
       - name: Compilar
         shell: bash
